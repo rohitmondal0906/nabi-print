@@ -134,6 +134,9 @@
   </div>
 
   <script>
+    let attempts = 0;
+    const maxAttempts = 3;
+
     async function checkAndRedirect() {
       const loading = document.getElementById('loadingSection');
       const offline = document.getElementById('offlineBox');
@@ -147,12 +150,43 @@
         const data = await response.json();
 
         if (data && data.url && data.url.startsWith('http')) {
-          // Instant redirect
-          window.location.replace(data.url);
-        } else {
-          showOffline();
+          // Verify tunnel is live before redirecting to prevent NXDOMAIN browser errors
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3500);
+            
+            const pingRes = await fetch(data.url + '/api/qr/info?t=' + Date.now(), {
+              method: 'GET',
+              mode: 'cors',
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (pingRes.ok) {
+              // Verified live: instant redirect!
+              window.location.replace(data.url);
+              return;
+            }
+          } catch (pingErr) {
+            console.warn('Target tunnel pre-check failed, retrying...', pingErr);
+          }
         }
+
+        // If target was unreachable, retry up to maxAttempts (giving Mac time to reconnect)
+        if (attempts < maxAttempts) {
+          attempts++;
+          document.querySelector('.status-text').textContent = 'কাউন্টার সংযোগ পুনরায় চেষ্টা করা হচ্ছে (' + attempts + '/' + maxAttempts + ')...';
+          setTimeout(checkAndRedirect, 2500);
+          return;
+        }
+
+        showOffline();
       } catch (err) {
+        if (attempts < maxAttempts) {
+          attempts++;
+          setTimeout(checkAndRedirect, 2500);
+          return;
+        }
         showOffline();
       }
     }
