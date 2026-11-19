@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NABI ENTERPRISE – Connecting to Print Counter...</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #f8fafc; color: #0f172a; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    .card { background: #fff; padding: 32px 24px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); max-width: 420px; width: 100%; text-align: center; border: 1px solid #e2e8f0; }
+    .spinner { width: 44px; height: 44px; border: 4px solid #e2e8f0; border-top-color: #1d4ed8; border-radius: 50%; animation: spin 0.75s linear infinite; margin: 20px auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    h2 { font-size: 1.4rem; color: #1e3a8a; }
+    .bn { font-size: 1.15rem; color: #047857; margin-top: 4px; font-weight: 700; }
+    p { color: #64748b; font-size: 0.9rem; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="font-size: 2.2rem; margin-bottom: 12px;">🖨️</div>
+    <h2>NABI ENTERPRISE</h2>
+    <div class="bn">নবী এন্টারপ্রাইজ</div>
+    <div class="spinner"></div>
+    <p>কাউন্টার সার্ভারে সংযুক্ত হচ্ছে...</p>
+    <p style="font-size: 0.8rem; color: #94a3b8;">Connecting to shop print counter...</p>
+  </div>
+  <script>
+    async function redirect() {
+      try {
+        const res = await fetch('target.json?t=' + Date.now(), { cache: 'no-store' });
+        const data = await res.json();
+        if (data && data.url && data.url.startsWith('http')) {
+          window.location.replace(data.url);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    redirect();
+  </script>
+</body>
+</html>
