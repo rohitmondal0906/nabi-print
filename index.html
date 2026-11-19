@@ -2,41 +2,168 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>NABI ENTERPRISE – Connecting to Print Counter...</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f8fafc; color: #0f172a; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-    .card { background: #fff; padding: 32px 24px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); max-width: 420px; width: 100%; text-align: center; border: 1px solid #e2e8f0; }
-    .spinner { width: 44px; height: 44px; border: 4px solid #e2e8f0; border-top-color: #1d4ed8; border-radius: 50%; animation: spin 0.75s linear infinite; margin: 20px auto 16px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    h2 { font-size: 1.4rem; color: #1e3a8a; }
-    .bn { font-size: 1.15rem; color: #047857; margin-top: 4px; font-weight: 700; }
-    p { color: #64748b; font-size: 0.9rem; margin-top: 8px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+      text-align: center;
+    }
+
+    .brand-icon {
+      width: 56px;
+      height: 56px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+    }
+
+    .shop-title-en {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .shop-title-bn {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1d4ed8;
+      margin-top: 2px;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #1d4ed8;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin: 24px auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .status-text {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .sub-text {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 6px;
+    }
+
+    /* Offline Box */
+    .offline-box {
+      display: none;
+      margin-top: 20px;
+      padding: 16px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      color: #991b1b;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .btn-retry {
+      display: inline-block;
+      margin-top: 12px;
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div style="font-size: 2.2rem; margin-bottom: 12px;">🖨️</div>
-    <h2>NABI ENTERPRISE</h2>
-    <div class="bn">নবী এন্টারপ্রাইজ</div>
-    <div class="spinner"></div>
-    <p>কাউন্টার সার্ভারে সংযুক্ত হচ্ছে...</p>
-    <p style="font-size: 0.8rem; color: #94a3b8;">Connecting to shop print counter...</p>
+
+  <div class="container">
+    <div class="brand-icon">🖨️</div>
+    <div class="shop-title-en">NABI ENTERPRISE</div>
+    <div class="shop-title-bn">নবী এন্টারপ্রাইজ</div>
+
+    <div id="loadingSection">
+      <div class="spinner"></div>
+      <div class="status-text">কাউন্টার আপলোড পেজে সংযুক্ত হচ্ছে...</div>
+      <div class="sub-text">Connecting to Print Counter, please wait...</div>
+    </div>
+
+    <div class="offline-box" id="offlineBox">
+      <strong>⚠️ কাউন্টারটি এই মুহূর্তে অফলাইন</strong>
+      <div style="margin-top: 4px;">দোকানের কাউন্টার সার্ভার চালু নেই। অনুগ্রহ করে অপারেটরের সাথে যোগাযোগ করুন।</div>
+      <button class="btn-retry" onclick="checkAndRedirect()">পুনরায় চেষ্টা করুন (Retry)</button>
+    </div>
   </div>
+
   <script>
-    async function redirect() {
+    async function checkAndRedirect() {
+      const loading = document.getElementById('loadingSection');
+      const offline = document.getElementById('offlineBox');
+      loading.style.display = 'block';
+      offline.style.display = 'none';
+
       try {
-        const res = await fetch('target.json?t=' + Date.now(), { cache: 'no-store' });
-        const data = await res.json();
+        // Fetch target.json with cache buster
+        const response = await fetch('target.json?t=' + Date.now(), { cache: 'no-store' });
+        if (!response.ok) throw new Error('Failed to read target URL');
+        const data = await response.json();
+
         if (data && data.url && data.url.startsWith('http')) {
+          // Instant redirect
           window.location.replace(data.url);
+        } else {
+          showOffline();
         }
-      } catch (e) {
-        console.error(e);
+      } catch (err) {
+        showOffline();
       }
     }
-    redirect();
+
+    function showOffline() {
+      document.getElementById('loadingSection').style.display = 'none';
+      document.getElementById('offlineBox').style.display = 'block';
+    }
+
+    // Run immediately on page load
+    checkAndRedirect();
   </script>
 </body>
 </html>
